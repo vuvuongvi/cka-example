@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myclaim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  # neu su dung storageClass create bang dynamic provision thi them storageClassName va khoi can pv
+  storageClassName: google-storage
+  resources:
+    requests:
+      storage: 500Mi
+  persistentVolumeReclaimPolicy: Retain

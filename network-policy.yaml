@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-policy
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - Ingress
+  - Egress
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 192.168.5.10/32
+    ports:
+    - protocol: TCP
+      port: 80
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: api-pod
+      # nếu không declare cái namespace selector, thì ở tất cả namespace nếu trùng selector sẽ có tác dụng hết
+      namespaceSelector:
+        matchLabels:
+          name: prod
+  # nếu mà viết namespaceSelector ở trong thì có nghĩa cái rule đó cả 2 đều phải thoả điều kiện matchLabels và namespaceSelector
+  # nếu chia ra thì có 2 rule, mà rule đầu viết cho phép nên rule 2 cũng cho phép luôn
+  # - namespaceSelector:
+        # matchLabels:
+          # name: prod 
+      # config để cho block mà pod có thể tương tác được với ip nằm ngoài cluster
+    - ipBlock:
+        cidr: 192.168.5.10/32
+    ports:
+    - protocol: TCP
+      port: 3306
